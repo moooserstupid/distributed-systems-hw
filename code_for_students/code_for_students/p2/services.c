@@ -1,0 +1,258 @@
+
+#include <time.h>
+#include "util.h"
+#include "sislog.h"
+
+// Auxiliary functions for initializing arrays
+//
+int initialized = 0;
+
+// array of integers where 
+// to store event accounting for
+// ease and level
+int **event_accounting;
+
+// File, facility and level names
+int numfacilities=MAXFACILITIES;
+int numlevels=MAXLEVELS;
+
+char * facilities_file_names[MAXFACILITIES]={
+    "fac00.dat",
+    "fac01.dat",
+    "fac02.dat",
+    "fac03.dat",
+    "fac04.dat",
+    "fac05.dat",
+    "fac06.dat",
+    "fac07.dat",
+    "fac08.dat",
+    "fac09.dat"};
+
+char * facilities_names[MAXFACILITIES]={
+    "kern",
+    "user",
+    "mail",
+    "daemon",
+    "auth",
+    "syslog",
+    "lpr",
+    "news",
+    "uucp",
+    "cron"};
+char * level_names[MAXLEVELS]={
+    "emerg",
+    "alert",
+    "crit",
+    "err",
+    "warning",
+    "notice",
+    "info",
+    "debug"};
+
+// Implementation of services ---------------------------------------------
+// -----------------------------------------------------------------------------
+void initialize_event_matrix(int **p,int numfac,int numlevels)
+{
+    // This function is called internally, not by the client
+    // so there is no need to check whether the parameters are 
+    // within the limits
+    register int i,j;
+  
+    for (i=0;i<numfac;i++)
+        for (j=0;j<numlevels;j++)
+            p[i][j]=0;
+}
+
+void init() {
+    register int i;
+
+    // if it was not already initialized, memory space is reserved for 
+    // the event array and the previous function is called to initialize it
+    // with zeros
+    // TODO
+    |
+    |
+    |
+    |
+    |
+    |
+}
+
+Result * initialize_sislog_1_svc(faclevel *q, struct svc_req *pet)
+{
+  static Result r;
+
+    // checks if the number of facilities and levels does not exceed the maximum allowed value.
+    // and if it is not, an error message is returned.
+    // In case it is within the limits, it calls the previous function to initialize the event count array and an exito result is returned.
+    // the event count matrix and a success result is returned.
+    if (q->facility<=0)
+    {
+        r.type=1;
+        r.Result_u.msg="ERROR: When initializing sislog. The maximum number of facilities cannot be <=0.";
+    }
+    // You continue...
+    // TODO
+    |
+    |
+    |
+    |
+
+    // Before returning, for debugging, we display on screen the array of
+    // counters by calling the function show_count_events (util.c)
+    show_event_discount(q->facility, q->level, 
+            facilities_names, level_names, event_accounting);
+    return &r;
+}
+
+Result * log_event_1_svc(eventsislog *evt, struct svc_req * request)
+{
+  static Result res;
+  FILE *fp;
+  char *datetime;
+  time_t timeraw;
+
+    // checks if the event to be logged has a facility number and level within the admissible ones (returns an error message if not).
+    // and level within the admissible ones (returns an error message if not).
+    // If everything is correct it should create the log line in the corresponding file
+    // (which also implies the time of receipt of the event, according to the format specified in the statement).
+    // specified in the statement)
+    // After that, it will increment the corresponding counter in the event array and return
+    // a success result
+
+    // TODO
+    |
+    |
+    |
+    |    
+
+    return(&res);
+}
+
+// Support functions for statistics
+Result * get_total_facilities_1_svc(int * fac, struct svc_req * request)
+{
+    static Result res;
+    register int i;
+
+    // returns the total number of events counted for a given facility
+    if ((*fac<0) || (*fac>(numfacilities-1)))
+    {
+        res.type=1;
+        res.Result_u.msg=(char *) malloc(sizeof(char)*MAXMSG);
+        sprintf(res.Result_u.msg,"ERROR: The %d value of facility is out of range.",*fac);
+    }
+    else
+    {  
+        res.type=0;
+        res.Result_u.value=0;
+        // Computing the sum of the counters for the given facility
+        // TODO
+        |
+        |
+        |
+        |
+    }	  
+    return(&res);
+}
+
+
+Result * get_total_level_1_svc(int * level, struct svc_req * request)
+{
+    static Result res;
+    register int i;
+
+    // returns the number of events counted for a given level
+    // regardless of its origin (facility)
+    if ((*level<0) || (*level>(numlevels-1)))
+    {
+        res.type=1;
+        res.Result_u.msg=(char *) malloc(sizeof(char)*MAXMSG);
+        sprintf(res.Result_u.msg,"ERROR: The %d level value is out of range.",*level);
+    }
+    else
+    {  
+        // Computing the sum of the counters for the given facility
+        // TODO
+        |
+        |
+        |
+        |
+
+    }	  
+    return(&res);
+}
+
+
+Result * get_total_facility_level_1_svc(faclevel * q, struct svc_req * request)
+{
+    static Result res;
+
+    // returns the total number of events counted for a given facility and level
+    if ((q->facility<0) || (q->facility>(numfacilities-1)))
+    {
+        res.type=1;
+        res.Result_u.msg=(char *) malloc(sizeof(char)*MAXMSG);
+        sprintf(res.Result_u.msg,"ERROR: The %d value of facility is out of range.",q->facility);
+    }
+    else if ((q->level<0) || (q->level>(numlevels-1)))
+    {
+        res.type=1;
+        res.Result_u.msg=(char *) malloc(sizeof(char)*MAXMSG);
+        sprintf(res.Result_u.msg,"ERROR: The %d value of level is out of range.",q->level);
+    }
+    else
+    {  
+        // Obtain the requested counter
+        // TODO
+        |
+        |
+
+    }	  
+    return(&res);
+}
+
+// All other functions are supplied and do not need to be modified.
+Result * get_num_facilities_1_svc(void * q, struct svc_req * request)
+{
+    static Result res;
+
+    res.type=0;
+    res.Result_u.value=numfacilities;
+    return(&res);
+}
+
+Result * get_num_levels_1_svc(void * q, struct svc_req * request)
+{
+    static Result res;
+
+    res.type=0;
+    res.Result_u.value=numlevels;
+    return(&res);
+}
+
+Result * get_facile_name_1_svc(int * n, struct svc_req * request)
+{
+    static Result res;
+
+    // gets the name of a facility given its facility number
+    if ((*n<0) || (*n>(numfacilities-1)))
+        res.Result_u.msg="ERROR in id facility";
+    else
+        res.Result_u.msg=facilities_names[*n];
+    res.type=1;
+    return(&res);
+    }
+
+Result * get_level_name_1_svc(int *n, struct svc_req * request)
+{
+    static Result res;
+
+    // gets the name of a facility given its facility number
+    if ((*n<0) || (*n>(numlevels-1)))
+        res.Result_u.msg="ERROR in id level";
+    else
+        res.Result_u.msg=level_names[*n];
+    res.type=1;
+    return(&res);
+}
